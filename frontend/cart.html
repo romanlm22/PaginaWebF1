@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tienda F1 — Carrito</title>
+
+  <link rel="stylesheet" href="styles.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <style>
+    :root{ --card:#141a29; }
+    .cart-wrap{max-width:980px;margin:24px auto}
+    .cart-card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 2px 10px #0005}
+    .qty{width:80px}
+    .empty{opacity:.8}
+    .hidden{display:none!important}
+    .badge-counter{position:absolute;top:-6px;right:-10px}
+  </style>
+</head>
+
+<body class="page">
+  <!-- NAV (misma que el resto) -->
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background:#e00000">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Tienda F1</a>
+      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="catalog.html">Catálogo</a></li>
+          <li class="nav-item"><a class="nav-link" href="terms.html">Términos</a></li>
+          <li class="nav-item"><a class="nav-link active" href="cart.html">Carrito</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <span id="weatherBadge" class="badge text-bg-secondary d-none">⋯</span>
+          <button id="btnLogin" class="btn btn-outline-light btn-sm" onclick="location.href='login.html'">Login</button>
+          <button id="btnLogout" class="btn btn-light btn-sm hidden">Logout</button>
+          <span id="userEmail" class="small text-light"></span>
+          <a href="cart.html" class="position-relative ms-2" title="Carrito">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cartCount" class="badge text-bg-primary rounded-pill badge-counter">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-container">
+    <div class="container cart-wrap">
+      <h2 class="mb-3">Tu carrito</h2>
+
+      <div id="cartContent" class="cart-card">
+        <!-- Render por JS -->
+      </div>
+
+      <div id="cartActions" class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mt-3 hidden">
+        <div><strong>Total: $ <span id="grandTotal">0.00</span></strong></div>
+        <form id="payForm" class="d-flex gap-2 align-items-center w-100 w-md-auto">
+          <input id="cardNumber" type="text"
+                 pattern="^(\d{16}|\d{4}\s\d{4}\s\d{4}\s\d{4})$"
+                 required class="form-control"
+                 placeholder="1234 5678 9012 3456 o 1234567890123456">
+          <button class="btn btn-primary">Pagar</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL confirmación -->
+  <div class="modal fade" id="confirmBuyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar compra</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas comprar?</p>
+          <label for="phoneInput" class="form-label">Número de celular</label>
+          <input id="phoneInput" type="tel" class="form-control" placeholder="+54 9 379 123 4567" required>
+          <div class="form-text">Formato: 8–15 dígitos, puede iniciar con “+”.</div>
+          <div id="phoneError" class="text-danger small mt-2 d-none">Ingresá un teléfono válido.</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button id="confirmBuy" type="button" class="btn btn-primary">Confirmar compra</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER (idéntico y sticky) -->
+  <footer class="site-footer py-4">
+    <div class="container text-center">
+      <div>Síguenos:
+        <a href="https://instagram.com" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/145/145805.png" alt="ig"></a>
+        <a href="https://twitter.com" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="tw"></a>
+        <a href="https://youtube.com" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="yt"></a>
+      </div>
+      <div class="text-muted mt-1">© Tienda F1</div>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="https://kit.fontawesome.com/a2e0e6ad5b.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="common.js"></script>
+
+  <script>
+  (async function(){
+    const { api, loadMe, saveCart, store, fmt, mountWeatherBadge } = window.__APP__;
+    await loadMe(); saveCart(); mountWeatherBadge?.();
+
+    const content = document.getElementById('cartContent');
+    const actions = document.getElementById('cartActions');
+    const totalEl = document.getElementById('grandTotal');
+    const payForm = document.getElementById('payForm');
+
+    // Catálogo (para nombres/imagenes)
+    let productsById = {};
+    try {
+      const all = await api('/api/products?section=all');
+      productsById = Object.fromEntries(all.map(p => [p.id, p]));
+    } catch {}
+
+    const recalcTotal = () =>
+      store.cart.reduce((acc, it) => acc + Number(it.price) * Number(it.quantity), 0);
+
+    function render(){
+      const cart = store.cart;
+      if (!cart.length) {
+        actions.classList.add('hidden');
+        content.innerHTML = '<div class="empty">El carrito está vacío.</div>';
+        totalEl.textContent = '0.00';
+        return;
+      }
+      actions.classList.remove('hidden');
+
+      let html = `
+        <div class="table-responsive">
+          <table class="table table-dark table-striped table-bordered align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="text-end">Precio</th>
+                <th class="text-center">Cant.</th>
+                <th class="text-end">Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      for (const line of cart) {
+        const p = productsById[line.productId] || {};
+        const name = line.name || p.name || ('Producto #' + line.productId);
+        const img = p.image || 'https://via.placeholder.com/80x60?text=F1';
+        const price = Number(line.price);
+        const subtotal = price * Number(line.quantity);
+
+        html += `
+          <tr data-id="${line.productId}">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img src="${img}" style="width:72px;height:48px;object-fit:cover;border-radius:6px" alt="">
+                <div>${name}</div>
+              </div>
+            </td>
+            <td class="text-end">$ ${fmt(price)}</td>
+            <td class="text-center">
+              <input type="number" class="form-control form-control-sm qty" min="1" value="${line.quantity}">
+            </td>
+            <td class="text-end">$ <span class="row-sub">${fmt(subtotal)}</span></td>
+            <td class="text-center"><button class="btn btn-sm btn-outline-danger rm">Quitar</button></td>
+          </tr>
+        `;
+      }
+      html += `</tbody></table></div>`;
+      content.innerHTML = html;
+      totalEl.textContent = fmt(recalcTotal());
+
+      // Eventos de filas
+      content.querySelectorAll('tr[data-id]').forEach(tr => {
+        const pid = Number(tr.getAttribute('data-id'));
+        tr.querySelector('.qty').addEventListener('change', e => {
+          let q = Math.max(1, Number(e.target.value || 1));
+          const line = store.cart.find(x => x.productId === pid);
+          if (!line) return;
+          line.quantity = q;
+          saveCart();
+          tr.querySelector('.row-sub').textContent = fmt(Number(line.price) * q);
+          totalEl.textContent = fmt(recalcTotal());
+        });
+        tr.querySelector('.rm').addEventListener('click', () => {
+          const idx = store.cart.findIndex(x => x.productId === pid);
+          if (idx >= 0) store.cart.splice(idx, 1);
+          saveCart();
+          render();
+        });
+      });
+    }
+
+    render();
+
+    // ====== Pago con confirmación de teléfono ======
+    const modalEl   = document.getElementById('confirmBuyModal');
+    const phoneInput= document.getElementById('phoneInput');
+    const phoneError= document.getElementById('phoneError');
+    const bsModal   = modalEl ? new bootstrap.Modal(modalEl) : null;
+    const confirmBtn= document.getElementById('confirmBuy');
+
+    let pendingPayload = null;
+
+    const isValidCard = (raw) => /^\d{16}$/.test((raw||'').replace(/\s+/g,''));
+    function isValidPhone(raw){
+      const cleaned = (raw || '').trim();
+      const digits = cleaned.replace(/\D/g,'');
+      return /^\+?[\d\s\-()]+$/.test(cleaned) && digits.length >= 8 && digits.length <= 15;
+    }
+
+    payForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (!store.user) { alert('Debés iniciar sesión para pagar.'); location.href='login.html'; return; }
+      const cardNumber = document.getElementById('cardNumber').value.trim();
+      if (!isValidCard(cardNumber)) { alert('Ingresá un número de tarjeta válido (16 dígitos).'); return; }
+      if (!store.cart.length) { alert('El carrito está vacío.'); return; }
+
+      const items = store.cart.map(it => ({
+        productId: it.productId, quantity: it.quantity, price: it.price
+      }));
+      pendingPayload = { items, cardNumber: cardNumber.replace(/\s+/g,'') };
+
+      if (bsModal) {
+        phoneInput.value = '';
+        phoneError.classList.add('d-none');
+        bsModal.show();
+      } else {
+        const phone = prompt('Confirmá tu compra.\nIngresá tu teléfono (+XXXXXXXX o solo dígitos 8–15):');
+        if (!phone || !isValidPhone(phone)) return alert('Teléfono inválido');
+        pagar(phone);
+      }
+    });
+
+    confirmBtn?.addEventListener('click', () => {
+      const phone = (phoneInput?.value || '').trim();
+      if (!isValidPhone(phone)) { phoneError?.classList?.remove('d-none'); return; }
+      bsModal.hide();
+      pagar(phone);
+    });
+
+    async function pagar(phone){
+      try{
+        const data = await api('/api/checkout', {
+          method: 'POST',
+          body: JSON.stringify({ ...pendingPayload, phone })
+        });
+        alert(`¡Pago exitoso! Orden #${data.orderId}. Total $${data.total.toFixed(2)}`);
+        store.cart = []; saveCart(); location.href = 'index.html';
+      }catch(err){
+        alert(err.message || 'No se pudo procesar el pago');
+      }finally{
+        pendingPayload = null;
+      }
+    }
+  })();
+  </script>
+</body>
+</html>

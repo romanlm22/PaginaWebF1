@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tienda F1 — Términos y condiciones</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="page">
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">Tienda F1</a>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <button id="btnLogin" class="btn btn-outline-light btn-sm" onclick="location.href='login.html'">Login</button>
+        <button id="btnLogout" class="btn btn-light btn-sm d-none">Logout</button>
+        <span id="userEmail" class="small text-secondary"></span>
+        <a href="cart.html">🛒 <span id="cartCount" class="badge text-bg-primary rounded-pill">0</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main container py-4">
+    <h3>Términos y condiciones</h3>
+    <p class="text-secondary">Última actualización: 25/08/2025</p>
+    <hr/>
+    <p>Este sitio es un demo educativo. El proceso de pago es simulado con un número de tarjeta (16 dígitos). No se almacenan datos de tarjetas.</p>
+    <ul>
+      <li>Compras sujetas a disponibilidad de inventario.</li>
+      <li>Devoluciones no aplican en el demo.</li>
+      <li>Privacidad: sólo se guarda email y hash de contraseña.</li>
+    </ul>
+  </main>
+
+  <footer><div class="container d-flex justify-content-between align-items-center">
+    <div>© Tienda F1</div>
+    <div>
+      <a href="https://instagram.com/" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png"></a>
+      <a href="https://twitter.com/" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733579.png"></a>
+      <a href="https://youtube.com/" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png"></a>
+    </div>
+  </div></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="common.js"></script>
+  <script>window.__APP__.loadMe(); window.__APP__.saveCart();</script>
+</body>
+</html>
+ 

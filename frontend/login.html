@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tienda F1 — Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="page">
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">Tienda F1</a>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <a href="cart.html">🛒 <span id="cartCount" class="badge text-bg-primary rounded-pill">0</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main container">
+    <div class="auth-wrap">
+      <h3 class="mb-3">Iniciar sesión</h3>
+      <form id="loginForm" class="d-grid gap-2">
+        <input class="form-control" type="email" id="email" placeholder="Correo" required>
+        <input class="form-control" type="password" id="password" placeholder="Contraseña" required>
+        <button class="btn btn-primary">Entrar</button>
+        <div class="text-center"><a href="register.html">Crear cuenta</a></div>
+      </form>
+    </div>
+  </main>
+
+  <footer><div class="container d-flex justify-content-between align-items-center">
+    <div>© Tienda F1</div>
+    <div>
+      <a href="https://instagram.com/" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png"></a>
+      <a href="https://twitter.com/" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733579.png"></a>
+      <a href="https://youtube.com/" target="_blank"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png"></a>
+    </div>
+  </div></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="common.js"></script>
+<script>
+  (function () {
+    const { loadMe, saveCart, login } = window.__APP__;
+    loadMe(); saveCart();
+
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const user = await login(email, password); // guarda token + user
+        console.log('Login ok:', user);
+
+        // 🔁 redirección robusta
+        window.location.replace('index.html');
+        setTimeout(() => { window.location.href = 'index.html'; }, 50);
+        return;
+      } catch (err) {
+        console.error(err);
+        alert(err.message || 'No se pudo iniciar sesión');
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

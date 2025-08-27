@@ -1,0 +1,108 @@
+:root{
+  --bg:#0b0e14; --card:#141923; --text:#e8e8e8; --muted:#9aa0a6;
+}
+html,body{height:100%}
+body{background:var(--bg); color:var(--text);}
+
+.navbar{background:#171c27;}
+footer{background:#121625; color:var(--muted); padding:24px 0; margin-top:auto;}
+footer a{color:var(--text); text-decoration:none}
+footer .icon{width:28px; height:28px; margin:0 6px; filter:opacity(.85)}
+.hidden{display:none!important;}
+.page{display:flex; min-height:100%; flex-direction:column;}
+.main{flex:1}
+
+/* Toast mini */
+.toast-mini{position:fixed; right:16px; bottom:16px; background:#1f2635; color:#fff; padding:10px 14px; border-radius:8px; opacity:0; transform:translateY(8px); transition:.2s;}
+.toast-mini.show{opacity:1; transform:translateY(0)}
+.auth-wrap{max-width:420px; margin:32px auto; background:#151a25; padding:24px; border-radius:12px}
+
+/* tamaño compacto del carrusel */
+/* ===== HERO al estilo de tus capturas ===== */
+.hero-wrap{
+  background: rgba(255, 0, 0, .18);   /* franja rosada detrás del carrusel */
+  padding: 14px 12px;
+  border-radius: 10px;
+  margin: 8px 12px 16px;
+}
+.hero-title{
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-align: center;
+  margin: 4px 0 8px;
+}
+
+/* Carrusel compacto */
+.hero-carousel {
+  max-width: 900px;     /* ancho máximo */
+  margin: 0 auto 16px;  /* centrado + espacio abajo */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+
+.hero-carousel .carousel-inner {
+  height: 220px;        /* << ALTO MUCHO MÁS CHICO */
+}
+
+.hero-carousel .carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* recorta sin deformar */
+}
+
+#weatherBadge{ font-weight:600; letter-spacing:.2px; }
+
+/* tamaño uniforme para imágenes de productos */
+.card .card-img-top,
+.product-img {
+  width: 100%;
+  height: 220px;               /* alto fijo para todas */
+  object-fit: cover;           /* recorta sin deformar */
+  background:#0e1320;          /* color de fondo por si la imagen tarda */
+}
+
+
+.whatsapp-container {
+    position: fixed;
+    right: 20px;   /* Lo manda al lado derecho */
+    bottom: 20px;  /* Lo deja un poco separado del borde inferior */
+    z-index: 1000; /* Siempre arriba del contenido */
+}
+
+.whatsapp-container .whatsapp-img {
+    width: 60px; 
+    height: 60px;
+    object-fit: contain;
+    border-radius: 50%; /* lo hace circular */
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.3); /* sombra linda */
+    transition: transform 0.2s ease;
+}
+
+.whatsapp-container .whatsapp-img:hover {
+    transform: scale(1.1); /* efecto al pasar el mouse */
+}
+
+/* Layout base para todas las páginas */
+html, body { height: 100%; }
+body.page { 
+  display: flex; 
+  min-height: 100vh; 
+  flex-direction: column; 
+  background: #0f1422;            /* mismo fondo que usás */
+  color: #eaeef7;
+}
+
+/* El main empuja el footer hacia abajo */
+.main-container { flex: 1 0 auto; }
+
+/* Footer sticky y consistente */
+.site-footer {
+  margin-top: auto; 
+  background: #0b0f1a;
+  border-top: 1px solid #222a3d;
+  color: #aab3c9;
+}
+.site-footer .icon { width: 22px; height: 22px; margin-left: 8px; vertical-align: middle; }
