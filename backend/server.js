@@ -1,5 +1,3 @@
-// backend/server.js
-// Requisitos: npm i express cors sqlite3 bcrypt jsonwebtoken dotenv
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
@@ -9,20 +7,15 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-
-// (opcional) mailer: sólo se usará si MAILER_ENABLED=true
 import { verifyMailer, sendWelcomeEmail, sendOrderEmail, sendOrderAdminEmail } from "./mailer.js";
 
 dotenv.config();
 
-// ---------- App ----------
 const app = express();
 const PORT = process.env.PORT || 10000;
 app.use(express.json());
 
-// ---------- CORS ----------
 const rawOrigins = (process.env.CLIENT_ORIGIN || "").split(",").map(s => s.trim()).filter(Boolean);
-// si no hay CLIENT_ORIGIN, permitir todo (útil para pruebas)
 const corsOptions = rawOrigins.length
   ? {
       origin: (origin, cb) => {
@@ -36,13 +29,11 @@ const corsOptions = rawOrigins.length
 
 app.use(cors(corsOptions));
 
-// ---------- Paths/DB ----------
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, "data.sqlite");
 const sqlite = sqlite3.verbose();
 const db = new sqlite.Database(DB_PATH);
 
-// Helpers sqlite3 (promesas)
 function run(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.run(sql, params, function (err) {
@@ -62,7 +53,6 @@ function all(sql, params = []) {
   });
 }
 
-// Cargar schema.sql (idempotente)
 try {
   const schemaPath = path.join(__dirname, "schema.sql");
   if (fs.existsSync(schemaPath)) {
@@ -84,11 +74,9 @@ try {
   console.error("Error aplicando schema:", e);
 }
 
-// ---------- Config ----------
 const JWT_SECRET = process.env.JWT_SECRET || "supersecreto123";
 const MAILER_ENABLED = String(process.env.MAILER_ENABLED || "false") === "true";
 
-// ---------- Semilla admins ----------
 async function seedAdmins() {
   const seedPath = path.join(__dirname, "admins.seed.json");
   if (!fs.existsSync(seedPath)) {
@@ -130,7 +118,6 @@ async function seedAdmins() {
   console.log(`Admins semillados/actualizados: ${ok}`);
 }
 
-// ---------- Auth ----------
 function signUser(row) {
   const user = { id: row.id, email: row.email, is_admin: !!row.is_admin };
   const token = jwt.sign(user, JWT_SECRET, { expiresIn: "7d" });
@@ -154,12 +141,10 @@ function adminOnly(req, res, next) {
   next();
 }
 
-// ---------- Rutas básicas/health ----------
 app.get("/", (_req, res) => res.send("Backend funcionando 🚀"));
 app.get("/healthz", (_req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
-// ---------- Productos ----------
 const VALID_SECTIONS = new Set(["index", "catalog"]);
 
 app.get("/api/products", async (req, res) => {
@@ -232,7 +217,6 @@ app.delete("/api/products/:id", auth, adminOnly, async (req, res) => {
   }
 });
 
-// ---------- Auth/usuario ----------
 app.post("/api/register", async (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: "email y password requeridos" });
@@ -268,7 +252,6 @@ app.post("/api/login", async (req, res) => {
 
 app.get("/api/me", auth, (req, res) => res.json({ user: req.user }));
 
-// ---------- Checkout ----------
 app.post("/api/checkout", auth, async (req, res) => {
   const { items, cardNumber, phone } = req.body || {};
   if (!Array.isArray(items) || !items.length) return res.status(400).json({ error: "Carrito vacío" });
@@ -342,7 +325,6 @@ app.post("/api/checkout", auth, async (req, res) => {
   }
 });
 
-// ---------- Start ----------
 app.listen(PORT, "0.0.0.0", async () => {
   console.log(`API escuchando en http://localhost:${PORT}`);
   await seedAdmins();
