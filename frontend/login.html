@@ -12,7 +12,6 @@
   </style>
 </head>
 <body class="page">
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand fw-bold" href="index.html">Tienda F1</a>
@@ -22,7 +21,6 @@
     </div>
   </nav>
 
-  <!-- Main -->
   <main class="container">
     <div class="card shadow-sm auth-card">
       <div class="card-body">
@@ -60,8 +58,7 @@
       </div>
     </div>
   </main>
-
-  <!-- Footer -->
+  
   <footer>
     <div class="container d-flex justify-content-between align-items-center">
       <div>© Tienda F1</div>
@@ -86,8 +83,7 @@
       const btn   = document.getElementById('btnSubmit');
       const sp    = document.getElementById('sp');
       const msg   = document.getElementById('msg');
-
-      // Mostrar/ocultar contraseña
+      
       document.getElementById('togglePass').onclick = () => {
         pass.type = pass.type === 'password' ? 'text' : 'password';
       };
@@ -101,7 +97,6 @@
         e.preventDefault();
         msg.className = 'alert d-none';
 
-        // Validaciones básicas
         let valid = true;
         if (!email.checkValidity()) { email.classList.add('is-invalid'); valid = false; } else email.classList.remove('is-invalid');
         if (!pass.checkValidity())  { pass.classList.add('is-invalid');   valid = false; } else pass.classList.remove('is-invalid');
