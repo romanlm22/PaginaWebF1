@@ -1,35 +1,23 @@
-// frontend/common.js
-
-// =========================
-//  Config API (Render / Local / Proxy Netlify)
-// =========================
-const PROD_API = "https://paginawebf1.onrender.com";   // <- tu backend en Render
+const PROD_API = "https://paginawebf1.onrender.com";
 const isLocalHost =
   ["localhost", "127.0.0.1"].includes(location.hostname) ||
   location.hostname.startsWith("192.168.");
 
 const USE_PROXY = true;
-; // <-- cámbialo a true si agregaste el _redirects en Netlify
 
-// Si usás proxy, las llamadas van a "/api/..."; si no, directo a la URL base
 const API_BASE = USE_PROXY
-  ? "" // Netlify reescribe a Render
+  ? ""
   : (isLocalHost ? "http://localhost:10000" : PROD_API);
 
-// =========================
-//  Estado global
-// =========================
 const store = {
   user: null,
   token: null,
   cart: JSON.parse(localStorage.getItem("cart") || "[]"),
-  products: [], // cache para la página actual
+  products: [],
 };
 
-// =========================
-/** Helper para peticiones a la API */
 async function api(path, options = {}) {
-  const url = API_BASE + path; // si USE_PROXY=true, API_BASE=""; ej: "/api/..."
+  const url = API_BASE + path;
   const headers = {
     "Content-Type": "application/json",
     ...(store.token ? { Authorization: `Bearer ${store.token}` } : {}),
@@ -47,9 +35,6 @@ async function api(path, options = {}) {
   return payload;
 }
 
-// =========================
-//  AUTH
-// =========================
 async function login(email, password) {
   const data = await api("/api/login", {
     method: "POST",
@@ -87,7 +72,6 @@ function loadMe() {
   const u = localStorage.getItem("user");
   store.user = u ? JSON.parse(u) : null;
 
-  // Navbar
   const btnLogin = document.getElementById("btnLogin");
   const btnLogout = document.getElementById("btnLogout");
   const userEmail = document.getElementById("userEmail");
@@ -104,12 +88,9 @@ function loadMe() {
     btnLogout?.classList.add("d-none");
     if (userEmail) userEmail.textContent = "";
   }
-  saveCart(); // actualizar badge
+  saveCart();
 }
 
-// =========================
-//  Carrito
-// =========================
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(store.cart));
   const badge = document.getElementById("cartCount");
@@ -129,9 +110,6 @@ function fmt(n) {
   return Number(n).toFixed(2);
 }
 
-// =========================
-//  Productos (UI)
-// =========================
 function productCard(p, section) {
   const adminBtns = store.user?.is_admin
     ? `<div class="mt-2 d-flex gap-2">
@@ -176,7 +154,6 @@ function renderGrid(root, list) {
   </div>`;
 }
 
-// Búsqueda live en navbar
 function bindSearchFor(containerId) {
   const input = document.getElementById("searchInput");
   const root = document.getElementById(containerId);
@@ -196,7 +173,6 @@ function bindSearchFor(containerId) {
   });
 }
 
-// Botones por tarjeta (agregar, editar, borrar)
 function bindCardButtons(root) {
   root.querySelectorAll(".btn-add").forEach((btn) => {
     btn.onclick = () => {
@@ -260,9 +236,6 @@ function bindCardButtons(root) {
   }
 }
 
-// =========================
-//  Admin panel (crear)
-// =========================
 function mountAdminPanel(targetId, afterCreate) {
   if (!store.user?.is_admin) return;
   const host = document.getElementById(targetId);
@@ -307,9 +280,6 @@ function mountAdminPanel(targetId, afterCreate) {
   });
 }
 
-// =========================
-//  Extra: badge del clima
-// =========================
 async function mountWeatherBadge() {
   const el = document.getElementById("weatherBadge");
   if (!el || !("geolocation" in navigator)) return;
@@ -334,9 +304,6 @@ async function mountWeatherBadge() {
   }
 }
 
-// =========================
-//  Exponer utilidades
-// =========================
 window.__APP__ = {
   api,
   login,
