@@ -12,7 +12,6 @@
   </style>
 </head>
 <body class="page">
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand fw-bold" href="index.html">Tienda F1</a>
@@ -22,7 +21,6 @@
     </div>
   </nav>
 
-  <!-- Main -->
   <main class="container">
     <div class="card shadow-sm auth-card">
       <div class="card-body">
@@ -97,7 +95,6 @@
       const sp    = document.getElementById('sp');
       const msg   = document.getElementById('msg');
 
-      // Mostrar/ocultar contraseña
       document.getElementById('togglePass').onclick = () => {
         const t = pass.type === 'password' ? 'text' : 'password';
         pass.type = t; pass2.type = t;
@@ -112,7 +109,6 @@
         e.preventDefault();
         msg.className = 'alert d-none';
 
-        // Validaciones básicas
         let valid = true;
         if (!email.checkValidity()) { email.classList.add('is-invalid'); valid = false; } else email.classList.remove('is-invalid');
         if (!pass.checkValidity())  { pass.classList.add('is-invalid');   valid = false; } else pass.classList.remove('is-invalid');
@@ -125,7 +121,6 @@
           const user = await register(email.value.trim(), pass.value);
           showMsg('Cuenta creada: ' + user.email, 'success');
 
-          // Redirección segura
           setTimeout(() => { window.location.replace('index.html'); }, 400);
         } catch (err) {
           console.error(err);
